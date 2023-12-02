@@ -1,4 +1,5 @@
 import { decodeKeyChain } from "../../src/day-1/trebuchet";
+import { readLinesFromFile } from "../../src/util/readFileRowsAsArray";
 
 describe("Test trebuchet", () => {
   it("array of five elements returns correct value", () => {
@@ -11,16 +12,32 @@ describe("Test trebuchet", () => {
     ];
     expect(decodeKeyChain(encoded)).toEqual(144);
   });
-  it("array of five elements returns correct value", () => {
-    const encoded = ["1abc2", "pqr3stu8vwx", "a1b2c3d4e5f", "treb7uchet"];
-    expect(decodeKeyChain(encoded)).toEqual(142);
+  it("final assertion", async () => {
+    const encoded = await readLinesFromFile("./tests/day-1/input");
+    console.log(encoded);
+    const decodedResult = decodeKeyChain(encoded);
+    expect(decodedResult).toEqual(54597);
   });
-  it("throws error on empty string", () => {
-    const encoded = ["1abc2", "pqr3stu8vwx", "a1b2c3d4e5f", ""];
-    expect(() => decodeKeyChain(encoded)).toThrow("Received invalid key");
+  it("supports word numbers", () => {
+    const encoded = [
+      "two1nine",
+      "eightwothree",
+      "abcone2threexyz",
+      "xtwone3four",
+      "4nineeightseven2",
+      "zoneight234",
+      "7pqrstsixteen",
+    ];
+    expect(decodeKeyChain(encoded)).toEqual(281);
   });
-  it("throws error on string without numbers", () => {
-    const encoded = ["1abc2", "pqr3stu8vwx", "a1b2c3d4e5f", "qwerty"];
-    expect(() => decodeKeyChain(encoded)).toThrow("Received invalid key");
+  it("single", () => {
+    const encoded = ["6tvxlgrsevenjvbxbfqrsk4seven"];
+    expect(decodeKeyChain(encoded)).toEqual(281);
+  });
+  it("final assertion part 2", async () => {
+    const encoded = await readLinesFromFile("./tests/day-1/secondInput");
+    // console.log(encoded);
+    const decodedResult = decodeKeyChain(encoded);
+    expect(decodedResult).toEqual(54504);
   });
 });
