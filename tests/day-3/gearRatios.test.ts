@@ -1,4 +1,7 @@
-import { calculateGearRatios } from "../../src/day-3/gearRatios";
+import {
+  calculateGearRatios,
+  calculateMultipliedGearRatios,
+} from "../../src/day-3/gearRatios";
 
 describe("Test gearRatios", () => {
   it("example part assertion", async () => {
@@ -9,8 +12,16 @@ describe("Test gearRatios", () => {
     const summatory = await calculateGearRatios("./tests/day-3/input");
     expect(summatory).toEqual(554003);
   });
-  // it("second part assertion", async () => {
-  //   const summatory = await calculateMinimalTotalValue("./tests/day-2/input");
-  //   expect(summatory).toEqual(72970);
-  // });
+  it("second part example assertion", async () => {
+    const summatory = await calculateMultipliedGearRatios(
+      "./tests/day-3/example",
+    );
+    expect(summatory).toEqual(467835);
+  });
+  it("second part assertion", async () => {
+    const summatory = await calculateMultipliedGearRatios(
+      "./tests/day-3/input",
+    );
+    expect(summatory).toEqual(72970);
+  });
 });

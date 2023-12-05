@@ -12,6 +12,7 @@ type NumberWithCoordinatesAndAdjacentCoordinates = NumberWithCoordinates & {
   adjacentCoordinates: Coordinate[];
 };
 let fileLines: string[] | undefined;
+
 const getFileLines = async (path: string): Promise<string[]> => {
   if (!fileLines) {
     fileLines = await readLinesFromFile(path);
@@ -76,6 +77,7 @@ const findNumberWithCoordinatesOnLine = (
   }
   return result;
 };
+
 const getAdjacentCoordinates = (
   coordinate: Coordinate,
   fileLines: string[],
@@ -102,4 +104,72 @@ const isAdjacentCoordinateASymbol = (
   const { x, y } = coordinate;
   const regex = /[^a-zA-Z0-9.]/;
   return regex.test(fileLines[y].charAt(x));
+};
+
+type GearWithCollidingNumbers = {
+  gearCoordinates: Coordinate;
+  numbers: NumberWithCoordinatesAndAdjacentCoordinates[];
+};
+
+export const calculateMultipliedGearRatios = async (path: string) => {
+  const fileLines = await getFileLines(path);
+  const numbersWithCoordinates = fileLines
+    .map((line, index) => findNumberWithCoordinatesOnLine(line, index))
+    .reduce((accumulator, value) => accumulator.concat(value), [])
+    .map((numberWithCoordinates) => {
+      const duplicateAdjacent = numberWithCoordinates.coordinates.map(
+        (coordinate) => getAdjacentCoordinates(coordinate, fileLines),
+      );
+      const adjacentCoordinates = new Set<Coordinate>(
+        duplicateAdjacent.flatMap((adjacent) => Array.from(adjacent)),
+      );
+      return {
+        number: numberWithCoordinates.number,
+        coordinates: numberWithCoordinates.coordinates,
+        adjacentCoordinates: Array.from(adjacentCoordinates),
+      } as NumberWithCoordinatesAndAdjacentCoordinates;
+    });
+  const gearsCoordinates = fileLines
+    .map((line, index) => findGearCoordinates(line, index))
+    .reduce((accumulator, value) => accumulator.concat(value), [])
+    .map((gearCoordinate) =>
+      findCollidingNumbers(gearCoordinate, numbersWithCoordinates),
+    )
+    .filter(
+      (gearWithCollidingNumber) => gearWithCollidingNumber.numbers.length >= 2,
+    );
+
+  return gearsCoordinates.reduce(
+    (a, b) => a + b.numbers.reduce((a, b) => a * b.number, 1),
+    0,
+  );
+};
+const findGearCoordinates = (line: string, row: number): Coordinate[] => {
+  const result: Coordinate[] = [];
+  for (let col = 0; col < line.length; col++) {
+    const char = line.charAt(col);
+    if (char === "*") {
+      result.push({ x: col, y: row });
+    }
+  }
+  return result;
+};
+
+const findCollidingNumbers = (
+  coordinate: Coordinate,
+  numberWithCoordinatesAndAdjacentCoordinates: NumberWithCoordinatesAndAdjacentCoordinates[],
+): GearWithCollidingNumbers => {
+  const numbers = numberWithCoordinatesAndAdjacentCoordinates.filter(
+    (number) =>
+      number.adjacentCoordinates.filter(
+        (adjacentCoordinate) =>
+          adjacentCoordinate.x === coordinate.x &&
+          adjacentCoordinate.y === coordinate.y,
+      ).length > 0,
+  );
+
+  return {
+    gearCoordinates: coordinate,
+    numbers,
+  };
 };
