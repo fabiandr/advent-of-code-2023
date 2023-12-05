@@ -61,7 +61,6 @@ export const checkBagContentViability = async (
   const possibleGames = (await initPossibleGames(path)).map(asSimplifiedGame);
   return possibleGames
     .map((game) => {
-      // console.log("simplified game", JSON.stringify(game));
       return checkGameViability(game, bagContent);
     })
     .reduce((a, b) => a + b, 0);
