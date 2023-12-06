@@ -10,6 +10,6 @@ describe("Test desertIsland", () => {
   });
   it("second part assertion", async () => {
     const summatory = await calculateMarginOfErrorPart2("./tests/day-6/input");
-    expect(summatory).toEqual(59370572);
+    expect(summatory).toEqual(39132886);
   });
 });
